@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    container_name: app
+    command: yarn dev
+    ports:
+      - "3333:9000"
+    volumes:
+      - .:/usr/app
+    networks:
+      - app-net
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    container_name: db
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --innodb-use-native-aio=0
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=crudbd
+      - MYSQL_USER=root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge
